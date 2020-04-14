@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Com.Example.XmlMapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Com.Mypackage.Mapper.SysPermissionMapper">
+    <select id="GetPermissionByRoleId" resultType="Com.Mypackage.Model.SysPermission">
+     SELECT * FROM sys_permission WHERE role_id=#{roleId}
+    </select>
+
+
+</mapper>

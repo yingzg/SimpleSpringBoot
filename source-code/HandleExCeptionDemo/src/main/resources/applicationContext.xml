@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--默认构造函数方式装配Bean-->
+    <bean id="HelloService22" class="Com.ExceptionHandle.Services.ServicesImpl.HelloServiceImpl">
+        <property name="name" value="卡卡"/>
+        <property name="age" value="11"/>
+    </bean>
+ <!--   &lt;!&ndash;静态工厂装载Bean&ndash;&gt;
+    <bean id="HelloService1" class="Com.ExceptionHandle.Services.ServicesImpl.BeanStaticFactorty" factory-method="HelloServiceInstance">
+        <constructor-arg index="0" name="name" value="kakaxi" />
+        <constructor-arg index="1" name="age" value="10" />
+    </bean>
+
+    &lt;!&ndash;实例工厂装载Bean&ndash;&gt;
+    <bean id="NewBeanFactory" class="Com.ExceptionHandle.Services.ServicesImpl.DemicBeanFactory"></bean>
+    <bean id="HelloService2" factory-bean="NewBeanFactory" factory-method="HelloServiceInstance">
+        <constructor-arg index="0" name="name" value="Suolong" />
+        <constructor-arg index="1" name="age" value="12" />
+    </bean>-->
+
+    <bean id="Person" class="Com.ExceptionHandle.Model.Person">
+        <property name="name" value="卡卡"/>
+        <property name="sex" value="Man"/>
+        <property name="email" value="123@123"/>
+        <property name="cars" >
+            <list>
+                <value>丰田</value>
+                <value>本田</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 扫描bean -->
+    <context:component-scan base-package="Com.ExceptionHandle"/>
+
+    <!-- 实现了用户自定义初始化和销毁方法 -->
+    <bean id="book" class="Com.ExceptionHandle.BeanYan" init-method="myPostConstruct" destroy-method="myPreDestory">
+        <!-- 注入bean 属性名称 -->
+        <property name="bookName" value="这是属性值" />
+    </bean>
+
+    <!--引入自定义的BeanPostProcessor-->
+    <bean class="Com.ExceptionHandle.Services.MyBeanPostProcessor"/>
+
+</beans>
+<!-- xad:约束文件的扩展名，xsd的约束文件的功能强，验证功能全面
+
+
+-->

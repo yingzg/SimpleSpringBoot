@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Com.Example.XmlMapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Com.Example.Mapper.UserMapper">
+    <select id="getRangUser" resultType="Com.Example.model.User">
+    select * from sb_users where id <![CDATA[>=]]> #{MinId} and  id <![CDATA[<=]]>#{MaxId}
+</select>
+
+
+    <select id="getUserByUsername" resultType="Com.Example.model.User">
+    select * from sb_users where username=#{username}
+</select>
+
+    <select id="getUserByUsernameLike" resultType="Com.Example.model.User">
+        <bind name="Usernamelike" value="'%'+username+'%'"/>
+        select * from sb_users where username like #{Usernamelike}
+</select>
+
+
+    <select id="getSingleUsers" resultMap="user_list">
+      select u.id,u.username,u.`password`,u.state,u.reg_Date,r.id rid,r.role_name
+      from sb_users u,sb_role r where u.roleid=r.id and u.id=#{id}
+    </select>
+    
+    <resultMap id="user_list" type="Com.Example.model.User">
+        <id property="id" column="id"></id>
+        <result property="password" column="password"/>
+        <result property="regDate" column="reg_date"/>
+        <result property="username" column="username"/>
+        <result property="state" column="state"/>
+        <!--column 代表数据库结果集中对应的字段名称-->
+     <!--   <result property="role.id" column="rid"/>
+        <result property="role.RoleName" column="role_name"/>-->
+
+        <association property="role" javaType="Com.Example.model.Role">
+            <id property="id" column="rid"></id>
+            <result property="RoleName" column="role_name"/>
+        </association>
+      <!--  <association property="role" select="Com.Example.Mapper.RoleMapper.GetoneRoleByid" column="roleid">
+            <id property="id" column="id" />
+            <result property="RoleName" column="role_name"/>
+        </association>-->
+    </resultMap>
+
+    <select id="getSingleUsers1" resultMap="user_list1">
+      select * from sb_users  where id=#{id}
+    </select>
+
+    <resultMap id="user_list1" type="Com.Example.model.User">
+        <id property="id" column="id"></id>
+        <result property="password" column="password"/>
+        <result property="regDate" column="reg_date"/>
+        <result property="username" column="username"/>
+        <result property="state" column="state"/>
+        <!--分步查询的方式实现表关联-->
+         <association property="role" select="Com.Example.Mapper.RoleMapper.GetoneRoleByid" column="roleid">
+              <id property="id" column="id" />
+              <result property="RoleName" column="role_name"/>
+          </association>
+    </resultMap>
+
+
+
+    <select id="getUsersByRoleid" resultType="Com.Example.model.User">
+    select * from sb_users where roleid=#{Roleid}
+</select>
+
+
+    <select id="getUserList" resultType="Com.Example.model.User">
+        select * from sb_users where id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+
+    <insert id="InsertUser" useGeneratedKeys="true" keyProperty="id">
+        insert into sb_users(username,password,reg_date,state)
+        values(#{username},#{password},#{regDate},#{state})
+    </insert>
+
+    <update id="UpdateUser">
+        update sb_users set
+        username=#{username},password=#{password},reg_date=#{regDate},state=#{state}
+        where id=#{id}
+    </update>
+
+    <delete id="DeleteUser">
+        delete from sb_users where id=#{id}
+    </delete>
+
+</mapper>

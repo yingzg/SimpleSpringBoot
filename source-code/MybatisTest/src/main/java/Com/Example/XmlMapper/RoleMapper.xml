@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Com.Example.XmlMapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="Com.Example.Mapper.RoleMapper">
+    <select id="GetoneRoleByid" resultType="Com.Example.model.Role">
+     select * from sb_role where id=#{id}
+    </select>
+
+    <select id="GetRoleAndUsersByid" resultMap="Role_rsm">
+
+  select r.id rid,r.role_name,u.id uid,u.username,u.reg_date,u.password
+      from sb_users u,sb_role r where u.roleid=r.id and r.id=#{roleid}
+
+    </select>
+
+    <resultMap id="Role_rsm" type="Com.Example.model.Role">
+        <id property="id" column="rid"/>
+        <result property="RoleName" column="role_name" />
+       <collection property="UserList" ofType="Com.Example.model.User">
+            <id property="id" column="uid"></id>
+            <result property="password" column="password"/>
+            <result property="regDate" column="reg_date"/>
+            <result property="username" column="username"/>
+            <result property="state" column="state"/>
+        </collection>
+    </resultMap>
+
+
+    <select id="GetRoleAndUsersByid1" resultMap="Role_rsm1">
+      select * from sb_role where id=#{id}
+    </select>
+
+    <resultMap id="Role_rsm1" type="Com.Example.model.Role">
+        <id property="id" column="id"/>
+        <result property="RoleName" column="role_name" />
+
+        <!--分步查询方式，就不需要写多表联合-->
+        <collection property="UserList" select="Com.Example.Mapper.UserMapper.getUsersByRoleid"
+                    column="{Roleid=id}">
+        </collection>
+
+
+    </resultMap>
+
+
+</mapper>

@@ -1,0 +1,70 @@
+package com.example.express.service.impl;
+
+import com.example.express.service.RedisService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
+
+
+@Slf4j
+@Service
+public class RedisServiceImpl implements RedisService {
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Override
+    public void set(String key, String value) {
+        stringRedisTemplate.opsForValue().set(key, value);
+    }
+
+    @Override
+    public String get(String key) {
+        return stringRedisTemplate.opsForValue().get(key);
+    }
+
+    @Override
+    public boolean expire(String key, long expire) {
+        return stringRedisTemplate.expire(key, expire, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void remove(String key) {
+        stringRedisTemplate.delete(key);
+    }
+
+    @Override
+    public Long increment(String key, long delta) {
+        return stringRedisTemplate.opsForValue().increment(key,delta);
+    }
+
+
+    @Override
+    public boolean checkRequestRateLimit(final String key, final int expireTime, final int max, TimeUnit timeUnit, String userAgent) {
+        long count = redisTemplate.opsForValue().increment(key, 1);
+        long time = redisTemplate.getExpire(key);
+        /*
+         * count = 1: 表示在本次请求前，key不存在或者key已过期。
+         * time = -1: 表示未设置过期时间
+         */
+        if (count == 1 || time == -1) {
+            redisTemplate.expire(key, expireTime, timeUnit);
+        }
+
+        if (count <= max) {
+            return false;
+        }
+
+        log.info("Express api request limit rate:too many requests: key={}, redis count={}, max count={}, " +
+                "expire time= {} s, user-agent={} ", key, count, max, expireTime, userAgent);
+        return true;
+    }
+
+}
